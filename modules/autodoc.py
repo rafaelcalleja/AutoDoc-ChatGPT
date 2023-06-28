@@ -38,7 +38,7 @@ class AutoDoc:
 
             response = self.__chatbot.ask(
                 prompt=Prompt(self.__language, code).create(),
-                convo_id=conversation,
+                #convo_id=conversation,
             )
 
             self.__conversation = conversation
