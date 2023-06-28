@@ -10,6 +10,7 @@ from modules.settings import *
 from modules.result import Result
 
 from rich.console import Console
+import uuid
 
 console = Console()
 
@@ -38,7 +39,7 @@ class AutoDoc:
 
             response = self.__chatbot.ask(
                 prompt=Prompt(self.__language, code).create(),
-                #convo_id=conversation,
+                convo_id=str(uuid.uuid4()),
             )
 
             self.__conversation = conversation
