@@ -9,9 +9,7 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 auth = {
-    "email": config["ChatGPT"]["email"],
-    "password": config["ChatGPT"]["password"],
-    "session_token": config["ChatGPT"]["session_token"],
+    "api_key": config["ChatGPT"].get("api_key", 'sk-'),
 }
 
 
@@ -32,9 +30,9 @@ if not os.path.exists(args.file):
 file = File(args.file)
 
 autodoc = AutoDoc(
-    auth,
-    file.content(),
-    file.language(),
+    chatbot_config=auth,
+    code=file.content(),
+    language=file.language(),
 )
 
 result = autodoc.start()
