@@ -6,10 +6,12 @@ from modules.settings import *
 import configparser
 
 config = configparser.ConfigParser()
+config.add_section("ChatGPT")
+config.set("ChatGPT", "api_key", 'sk-')
 config.read("config.ini")
 
 auth = {
-    "api_key": config.get("ChatGPT", {}).get("api_key", 'sk-'),
+    "api_key": config["ChatGPT"]["api_key"],
 }
 
 
