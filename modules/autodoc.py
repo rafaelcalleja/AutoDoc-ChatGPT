@@ -3,7 +3,7 @@ from time import sleep
 
 from colorama import init as colorama_init
 
-from revChatGPT.V1 import Chatbot
+from revChatGPT.V3 import Chatbot
 from modules.prompt import Prompt
 from modules.divider import Divider
 from modules.settings import *
@@ -17,9 +17,8 @@ colorama_init()
 
 
 class AutoDoc:
-    def __init__(self, config: str, code: str, language: str):
-        self.__config = config
-
+    def __init__(self, code: str, language: str, chatbot_config: dict):
+        self.__config = chatbot_config
         self.__code = code
         if not isinstance(self.__code, str):
             exit(f"[{RED}Error{RESET}] Code is must be a string")
@@ -32,20 +31,21 @@ class AutoDoc:
 
     def __ask(self, code) -> str:
         response = None
-        conversation = None
+        conversation = 'default'
         try:
-            for data in self.__chatbot.ask(
-                Prompt(self.__language, code).create(),
-                conversation_id=self.__conversation,
-                parent_id=None,
-            ):
-                response = data["message"]
-                conversation = data["conversation_id"]
-            if not self.__conversation:
-                self.__conversation = conversation
+            if self.__conversation:
+                conversation = self.__conversation
+
+            response = self.__chatbot.ask(
+                prompt=Prompt(self.__language, code).create(),
+                convo_id=conversation,
+            )
+
+            self.__conversation = conversation
+
             return response
-        except:
-            raise ValueError("ChatGPT error")
+        except Exception as e:
+            raise ValueError(f"ChatGPT error {e}")
 
     def start(self):
         with console.status("[bold green] Please wait...") as status:
@@ -62,21 +62,8 @@ class AutoDoc:
             )
 
             print(f"[{BLUE}3{RESET}] {BOLD}Connecting to ChatGPT{RESET}")
-            if self.__config["session_token"]:
-                self.__chatbot = Chatbot(
-                    config={
-                        "session_token": self.__config["session_token"],
-                    }
-                )
-            elif self.__config["email"] and self.__config["password"]:
-                self.__chatbot = Chatbot(
-                    config={
-                        "email": self.__config["email"],
-                        "password": self.__config["password"],
-                    }
-                )
-            else:
-                raise ValueError("No login details")
+
+            self.__chatbot = Chatbot(**self.__config)
 
             self.__conversation = None
 
