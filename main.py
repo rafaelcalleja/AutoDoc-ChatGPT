@@ -9,7 +9,7 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 auth = {
-    "api_key": config["ChatGPT"].get("api_key", 'sk-'),
+    "api_key": config.get("ChatGPT", {}).get("api_key", 'sk-'),
 }
 
 
